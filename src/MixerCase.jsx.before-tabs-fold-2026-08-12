@@ -1,0 +1,20 @@
+﻿import { useRef, useState } from 'react'
+const mixerShots=['/assets/mixer/effects-01.png','/assets/mixer/effects-02.png','/assets/mixer/effects-03.png','/assets/mixer/effects-04.png','/assets/mixer/effects-05.png']
+export default function MixerCase(){
+ const rail=useRef(null),drag=useRef({down:false,x:0,left:0});const[page,setPage]=useState(0)
+ const update=()=>{const el=rail.current;if(!el)return;const max=Math.max(1,el.scrollWidth-el.clientWidth);setPage(Math.min(4,Math.round(el.scrollLeft/max*4)))}
+ const move=dir=>rail.current?.scrollBy({left:dir*rail.current.clientWidth*.82,behavior:'smooth'})
+ const down=e=>{drag.current={down:true,x:e.clientX,left:rail.current.scrollLeft};rail.current.setPointerCapture(e.pointerId)}
+ const pointerMove=e=>{if(drag.current.down)rail.current.scrollLeft=drag.current.left-(e.clientX-drag.current.x)}
+ const up=()=>{drag.current.down=false}
+ return <section className="mixer-case" id="mixer"><div className="shell">
+  <div className="mixer-head reveal"><div><p className="section-kicker">PRODUCT CASE · SOUND EXPERIENCE</p><h2>K歌调音台</h2><p>从声音处理到成品输出，构建完整的 K 歌音频体验。</p></div><dl><div><dt>项目角色</dt><dd>产品运营 / 音效内容运营</dd></div><div><dt>产品类型</dt><dd>C端产品</dd></div><div><dt>项目周期</dt><dd>2023—2026</dd></div></dl></div>
+  <div className="mixer-tabs"><button className="active">人声均衡</button><button>人声美化</button><button>AI降噪</button><button>作品增强</button><button>AI歌声</button></div>
+  <div className="mixer-focus reveal"><img src={mixerShots[0]} alt="K歌调音台界面"/><div><p className="section-kicker">MODULE 01</p><h3>人声均衡</h3><p>通过精细化的均衡调节与音效配置，覆盖多样演唱场景，让用户更直观地找到适合自己的声音表达。</p><ul><li>负责音频参数配置与音效库管理</li><li>制定听评标准并验证效果一致性</li><li>推动版本验收、问题修复与上线复盘</li></ul></div></div>
+  <div className="effects-head"><div><p className="section-kicker">SWIPE TO EXPLORE</p><h3>音效模块</h3></div><div className="slider-arrows"><button onClick={()=>move(-1)}>←</button><button onClick={()=>move(1)}>→</button></div></div>
+  <div className="effects-viewport"><div className="effects-rail" ref={rail} onScroll={update} onPointerDown={down} onPointerMove={pointerMove} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>{mixerShots.map((src,i)=><figure className="effect-shot" key={src}><img src={src} alt={'音效模块截图 '+(i+1)}/><figcaption>0{i+1}</figcaption></figure>)}</div></div>
+  <div className="slider-dots">{mixerShots.map((_,i)=><button key={i} className={page===i?'active':''} onClick={()=>rail.current?.children[i]?.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})}/>)}</div>
+  <div className="mixer-stats"><div><b>20+</b><span>人声音效</span></div><div><b>5</b><span>音频处理模块</span></div><div><b>500+</b><span>Demo 样本</span></div><div><b>iOS / Android</b><span>双端验收</span></div></div>
+  <div className="mixer-process"><span>项目流程</span><p>需求分析　→　音效设计　→　参数配置　→　Demo验证　→　双端验收　→　上线复盘</p></div>
+ </div></section>
+}

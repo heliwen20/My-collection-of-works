@@ -1,0 +1,34 @@
+﻿import { useRef, useState } from 'react'
+const mixerShots=['/assets/mixer/effects-01.png','/assets/mixer/effects-02.png','/assets/mixer/effects-03.png','/assets/mixer/effects-04.png','/assets/mixer/effects-05.png']
+const modules=[
+ {name:'人声音效',title:'人声音效',text:'覆盖多种演唱场景与声音风格，通过音效配置帮助用户快速找到适合自己的声音表达。',bullets:['负责音效方案配置与音效库管理','制定听评标准并验证效果一致性','推动版本验收、问题修复与上线复盘'],shot:0},
+ {name:'人声美化',title:'人声美化',text:'围绕人声能量、清晰度和听感饱满度，设计柔和、适中、饱和等不同增强档位。',bullets:['设计人声增强档位与适用场景','组织多轮 Demo 听评与参数调优','验证不同机型与演唱素材的稳定性'],shot:0},
+ {name:'人声均衡',title:'人声均衡',text:'通过均衡、音色调节与人声对齐能力，改善人声频率分布和伴奏融合效果。',bullets:['配置均衡模板与音色参数','参与人声伴奏对齐效果验收','沉淀听感问题与验收标准'],shot:1},
+ {name:'人声母带',title:'人声母带',text:'面向作品整体输出，提供不同风格和空间感的母带处理方案，提升成品完整度。',bullets:['参与母带模板配置与命名包装','对比处理前后响度和融合效果','协同算法与研发推进版本交付'],shot:3},
+ {name:'AI歌声',title:'AI歌声',text:'探索 AI 歌声在演唱辅助与内容创作中的应用，连接产品能力和用户表达场景。',bullets:['参与 AI 歌声能力体验与验收','梳理内容应用场景和用户路径','支持版本素材、配置与上线复盘'],shot:4}
+]
+export default function MixerCase(){
+ const rail=useRef(null),drag=useRef({down:false,x:0,left:0});const[page,setPage]=useState(0),[active,setActive]=useState(0),[open,setOpen]=useState(false)
+ const mod=modules[active]
+ const update=()=>{const el=rail.current;if(!el)return;const max=Math.max(1,el.scrollWidth-el.clientWidth);setPage(Math.min(4,Math.round(el.scrollLeft/max*4)))}
+ const move=dir=>rail.current?.scrollBy({left:dir*rail.current.clientWidth*.82,behavior:'smooth'})
+ const down=e=>{drag.current={down:true,x:e.clientX,left:rail.current.scrollLeft};rail.current.setPointerCapture(e.pointerId)}
+ const pointerMove=e=>{if(drag.current.down)rail.current.scrollLeft=drag.current.left-(e.clientX-drag.current.x)}
+ const up=()=>{drag.current.down=false}
+ const select=i=>{setActive(i);if(i!==0)setOpen(false)}
+ return <section className="mixer-case" id="mixer"><div className="shell">
+  <div className="mixer-head reveal"><div><p className="section-kicker">PRODUCT CASE · SOUND EXPERIENCE</p><h2>K歌调音台</h2><p>从声音处理到成品输出，构建完整的 K 歌音频体验。</p></div><dl><div><dt>项目角色</dt><dd>产品运营 / 音效内容运营</dd></div><div><dt>产品类型</dt><dd>C端产品</dd></div><div><dt>项目周期</dt><dd>2023—2026</dd></div></dl></div>
+  <div className="mixer-tabs">{modules.map((item,i)=><button key={item.name} className={active===i?'active':''} onClick={()=>select(i)}>{item.name}</button>)}</div>
+  <div className="mixer-focus" key={mod.name}><img src={mixerShots[mod.shot]} alt={mod.name+'界面'}/><div><p className="section-kicker">MODULE 0{active+1}</p><h3>{mod.title}</h3><p>{mod.text}</p><ul>{mod.bullets.map(x=><li key={x}>{x}</li>)}</ul></div></div>
+  {active===0&&<div className={'effects-fold '+(open?'open':'')}>
+   <button className="effects-toggle" onClick={()=>setOpen(!open)} aria-expanded={open}><span><small>SWIPE TO EXPLORE</small><b>音效模块</b></span><span>{open?'收起':'展开'} <i>{open?'−':'＋'}</i></span></button>
+   {open&&<div className="effects-content">
+    <div className="effects-tools"><p>支持鼠标拖动、触控板与手机手指左右滑动</p><div className="slider-arrows"><button onClick={()=>move(-1)}>←</button><button onClick={()=>move(1)}>→</button></div></div>
+    <div className="effects-viewport"><div className="effects-rail" ref={rail} onScroll={update} onPointerDown={down} onPointerMove={pointerMove} onPointerUp={up} onPointerCancel={up} onPointerLeave={up}>{mixerShots.map((src,i)=><figure className="effect-shot" key={src}><img src={src} alt={'音效模块截图 '+(i+1)}/><figcaption>0{i+1}</figcaption></figure>)}</div></div>
+    <div className="slider-dots">{mixerShots.map((_,i)=><button key={i} className={page===i?'active':''} onClick={()=>rail.current?.children[i]?.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})}/>)}</div>
+   </div>}
+  </div>}
+  <div className="mixer-stats"><div><b>20+</b><span>人声音效</span></div><div><b>5</b><span>音频处理模块</span></div><div><b>500+</b><span>Demo 样本</span></div><div><b>iOS / Android</b><span>双端验收</span></div></div>
+  <div className="mixer-process"><span>项目流程</span><p>需求分析　→　音效设计　→　参数配置　→　Demo验证　→　双端验收　→　上线复盘</p></div>
+ </div></section>
+}
